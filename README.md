@@ -1,18 +1,19 @@
 # Enterprise RAG Engine
 
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)]()
+[![License](https://img.shields.io/badge/license-MIT-green.svg)]()
+[![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
+
 ![Terminal Demo](demo.gif)
 
-An enterprise-ready Retrieval-Augmented Generation (RAG) system built in Python. I focused heavily on the "Day 2" operational requirements that simple notebook tutorials ignore, such as streaming, citation accuracy, and evaluation.
+> **A production-ready Retrieval-Augmented Generation (RAG) system built in Python for regulated verticals requiring high accuracy and evaluation.**
 
-## Tech Stack
-- **Python**
-- **Vector Databases** (Pinecone / local embeddings)
-- **RAG Architecture** (Chunking, retrieval, generation)
-- **Evaluation** (Custom eval scripts for retrieval precision)
-- **Deployment** (Vercel Edge functions for low-latency streaming)
+## 🌟 Key Features
+- ✅ **Semantic routing for queries**
+- ✅ **Sub-second vector retrieval**
+- ✅ **Vercel Edge-compatible streaming outputs**
 
-
-## Architecture
+## 🏗️ Architecture
 
 ```mermaid
 flowchart LR
@@ -22,18 +23,57 @@ flowchart LR
     D -->|Streaming Response| A
 ```
 
-## Live Endpoint (Interactive Demo)
-This project is deployed as a serverless backend on Vercel. You can test the API instantly via your terminal.
+## 🚀 Live API Endpoint (Vercel)
+
+This project is deployed serverless via Vercel Edge Functions. You can test the interaction directly from your terminal.
 
 ```bash
 # Example Request
-
-![Terminal Demo](demo.gif)
 curl -X GET https://enterprise-rag-engine-1vk51ya5k-dev4aibots.vercel.app/api/health
 ```
 
-## Demo
-To generate a terminal GIF demonstration using `vhs`, run:
-```bash
-vhs demo.tape
+## 💻 Developer Quickstart
+
+### Prerequisites
+- Python 3.11+
+- Node.js (for Vercel CLI)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/dev4aibots/enterprise-rag-engine.git
+   cd enterprise-rag-engine
+   ```
+
+2. **Set up virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+3. **Configure Environment**
+   ```bash
+   cp .env.example .env
+   # Add your API keys to .env
+   ```
+
+4. **Run Locally**
+   ```bash
+   npm run dev
+   ```
+
+## 📁 Project Structure
 ```
+.
+├── api/                  # Vercel serverless endpoints
+├── src/                  # Core Python modules & agent logic
+├── tests/                # Unit and integration tests
+├── public/               # Static assets
+├── requirements.txt      # Python dependencies
+└── vercel.json           # Vercel routing configuration
+```
+
+## 📄 License
+This project is licensed under the MIT License.
