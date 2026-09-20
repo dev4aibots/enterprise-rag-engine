@@ -8,12 +8,12 @@
 
 > **A production-ready Retrieval-Augmented Generation (RAG) system built in Python for regulated verticals requiring high accuracy and evaluation.**
 
-## 🌟 Key Features
-- ✅ **Semantic routing for queries**
-- ✅ **Sub-second vector retrieval**
-- ✅ **Vercel Edge-compatible streaming outputs**
+## Key Features
+- **Semantic routing for queries**
+- **Sub-second vector retrieval**
+- **Vercel Edge-compatible streaming outputs**
 
-## 🏗️ Architecture
+## Architecture
 
 ```mermaid
 flowchart LR
@@ -23,7 +23,7 @@ flowchart LR
     D -->|Streaming Response| A
 ```
 
-## 🚀 Live API Endpoint (Vercel)
+## Live API Endpoint (Vercel)
 
 This project is deployed serverless via Vercel Edge Functions. You can test the interaction directly from your terminal.
 
@@ -32,7 +32,7 @@ This project is deployed serverless via Vercel Edge Functions. You can test the 
 curl -X GET https://enterprise-rag-engine-1vk51ya5k-dev4aibots.vercel.app/api/health
 ```
 
-## 💻 Developer Quickstart
+## Developer Quickstart
 
 ### Prerequisites
 - Python 3.11+
@@ -64,7 +64,7 @@ curl -X GET https://enterprise-rag-engine-1vk51ya5k-dev4aibots.vercel.app/api/he
    npm run dev
    ```
 
-## 📁 Project Structure
+## Project Structure
 ```
 .
 ├── api/                  # Vercel serverless endpoints
@@ -75,5 +75,5 @@ curl -X GET https://enterprise-rag-engine-1vk51ya5k-dev4aibots.vercel.app/api/he
 └── vercel.json           # Vercel routing configuration
 ```
 
-## 📄 License
+## License
 This project is licensed under the MIT License.
