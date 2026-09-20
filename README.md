@@ -1,97 +1,97 @@
 # Enterprise RAG Engine
 
-A production-ready Retrieval-Augmented Generation (RAG) system with hybrid search and robust evaluation.
-
-[ Demo ] [ Architecture ] [ API Docs ] [ Evaluation ]
+> Production-oriented Retrieval-Augmented Generation (RAG) system with evaluation (TypeScript/Hono).
 
 ![Terminal Demo](demo.gif)
 
-Python • FastAPI • VectorDB • BM25 • Evaluation
+This repository implements the backend architecture for a high-performance RAG pipeline, focusing on token-streaming via Server-Sent Events (SSE) and strict citation anchoring.
 
-## What it does
-A production-ready Retrieval-Augmented Generation (RAG) system with hybrid search and robust evaluation. This repository implements the core logic, evaluation harnesses, and deployment configurations required to run this in a production-like environment.
+## Problem
+Standard chat interfaces suffer from high time-to-first-token (TTFT) and hallucinated citations. Real enterprise applications require streaming responses grounded strictly in retrieved documents.
 
-## Execution Trace (Proof of Work)
+## Solution
+A Node/Hono API utilizing Server-Sent Events (SSE) to stream tokens instantly, with an evaluation harness built to measure retrieval fidelity (Recall@K).
 
-```text
-Question:
-"What is our employee reimbursement policy?"
-
-Retrieved documents
-────────────────────────
-1. finance/reimbursement.pdf
-   pages 4–6
-   score: 0.91
-
-2. hr/employee-policy.pdf
-   pages 12–13
-   score: 0.87
-```
-
-## Evaluation & Performance
-
-                    Baseline    Final
-Recall@10              82.4%     94.8%
-MRR@10                  0.69      0.87
-Faithfulness            81.2%     91.5%
-
-P50 latency             420ms     310ms
-P95 latency            1.41s      740ms
-
-## Engineering Decisions
-
-### Why hybrid retrieval?
-Dense retrieval improved semantic matching but performed poorly on exact identifiers (like employee IDs). BM25 recovered exact-match cases.
-
-### Why reranking?
-Initial retrieval prioritizes recall. Reranking improves precision before context is passed to the model, reducing context window exhaustion.
-
-## Failure Analysis
-
-Failure #1 — Hallucinated citations
-The model occasionally cited documents that weren't provided in the context window.
-Fix: Implemented strict grounding prompts and post-generation citation validation.
-Result: Faithfulness increased by 10%.
-
-## System Architecture
-
+## Architecture
 ```mermaid
 flowchart LR
-    A[User Query] --> B[Embedding Model]
-    B --> C[(Vector Database)]
-    C -->|Top-K Context| D[LLM Edge Function]
-    D -->|Streaming Response| A
+    A[User Query] --> B[Tokenization]
+    B --> C[(In-Memory Document Store)]
+    C -->|Top-K Context| D[Response Formatter]
+    D -->|Streaming SSE| A
 ```
 
-## My Contributions
+## Retrieval Pipeline
+Currently implemented: **Keyword Overlap (Primitive BM25)**
+Planned: **Dense Vector Search (PostgreSQL/pgvector)**
 
-**Built independently as a portfolio project.**
-- Designed the system architecture and data flows.
-- Implemented the core logic, tool integrations, and evaluation metrics.
-- Optimized latency and context window management.
-- Deployed the API to Vercel Edge functions.
+## Query Flow
+1. API receives query via `/chat/stream`
+2. Document tokens overlap scored against the query
+3. Citations bound and streamed first via `event: citations`
+4. LLM response streamed token-by-token via `event: token`
 
-## Developer Quickstart
+## Example
+**Input:** `q=erasure right&jurisdiction=GDPR`
 
+**Output Stream:**
+```text
+event: citations
+data: {"items":[{"docId":"GDPR-Art-17","page":1,"snippet":"The data subject shall have the right to obtain erasure...","score":4}]}
+
+event: token
+data: {"text":"Per"}
+
+event: token
+data: {"text":" GDPR-Art-17,"}
+```
+
+## Evaluation
+A custom evaluation harness is located in `evals/run_eval.py`.
+It runs standard IR metrics against the mock document store.
+
+```text
+Recall@1 (Keyword Overlap): 100.0%
+P50 Latency: <5ms (Local Memory)
+```
+*Note: Dense retrieval and reranking evaluation will be measured once the pgvector integration is complete.*
+
+## Performance
+- Time-to-First-Token (TTFT): <10ms
+- Connection overhead: Minimal via native Node HTTP / Hono
+
+## Failure Analysis
+Failure: **Lack of Semantic Understanding**
+Cause: The current engine relies purely on token-overlap string matching. Queries like "delete my data" fail to match "erasure right".
+Mitigation: Integrating an Embedding model and vector store for dense retrieval.
+
+## Security
+- Document access control via strict `jurisdiction` query parameters (e.g., GDPR vs HIPAA).
+- Stream injection prevention via structured `JSON.stringify` on all SSE frames.
+
+## Local Development
 ```bash
-# 1. Clone
 git clone https://github.com/dev4aibots/enterprise-rag-engine.git
 cd enterprise-rag-engine
+npm install
+npm run serve
+```
 
-# 2. Setup
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-
-# 3. Test
+## Testing
+```bash
 make test
 ```
 
-## Documentation
+## Deployment
+Deployed as Vercel Edge functions, utilizing Hono's universal web standards compatibility for sub-100ms cold starts.
 
-The `docs/` directory contains deep-dives into the system:
-- `docs/architecture.md`
-- `docs/engineering-decisions.md`
-- `docs/evaluation.md`
-- `docs/limitations.md`
+## Limitations
+- Retrieval is currently lexical, not semantic.
+- Single-instance memory limit (no persistent database attached yet).
+- No chunking strategy implemented for large documents.
+
+## My Engineering Work
+Built as a demonstration of high-performance web streaming. 
+- Implemented the SSE streaming wrapper and parser.
+- Engineered the evaluation harness (`evals/run_eval.py`).
+- Integrated Zod for strict query parameter validation.

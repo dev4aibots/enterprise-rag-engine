@@ -1,0 +1,4 @@
+{"query": "obtain confirmation of processing", "jurisdiction": "GDPR", "expected_docs": ["GDPR-Art-15"]}
+{"query": "erasure right", "jurisdiction": "GDPR", "expected_docs": ["GDPR-Art-17"]}
+{"query": "disclose protected health information", "jurisdiction": "HIPAA", "expected_docs": ["HIPAA-164.502"]}
+{"query": "access controls to information assets", "jurisdiction": "SOC2", "expected_docs": ["SOC2-CC6.1"]}
