@@ -2,7 +2,9 @@
 
 > Production-oriented RAG engine with SSE streaming and evaluated retrieval.
 
-[Demo](#) | [Architecture](docs/architecture.md) | [API Docs](#) | [Evaluation](#evaluation--performance)
+![Demo](demo.gif)
+
+[Demo](demo.gif) | [Architecture](docs/architecture.md) | [API Docs](#) | [Evaluation](#evaluation--performance)
 
 ## What it does
 A Retrieval-Augmented Generation pipeline focusing on low-latency token-streaming via Server-Sent Events (SSE) and strict citation anchoring for enterprise documents.
