@@ -80,7 +80,7 @@ python3 tests/test_pipeline.py
 
 This repository previously held a misplaced copy of the PRAMAAN v2
 codebase (which lives canonically in
-[dev4aibots/pramaan](https://github.com/dev4aibots/pramaan)). That copy is
+[dev4aibots/Pramaan](https://github.com/dev4aibots/Pramaan)). That copy is
 preserved unchanged on the `backup/pramaan-v2-copy-20261021` branch. The
 FastAPI service in this repository is this project's own implementation
 of the Enterprise RAG Engine spec, written for this restoration; the
