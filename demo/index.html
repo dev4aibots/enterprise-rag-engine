@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise RAG Engine — Live Demo</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <div>
+      <h1>Enterprise RAG Engine — Live Demo</h1>
+      <p class="subtitle">Fully client-side demo: TF-IDF retrieval over your documents, in your browser. No data leaves this page.</p>
+    </div>
+    <span class="badge">Client-side &middot; No backend</span>
+  </div>
+  <nav class="pipeline" aria-label="Pipeline status">
+    <span class="pipe-step" id="step-documents">Documents</span><span class="pipe-arrow">&rarr;</span>
+    <span class="pipe-step" id="step-chunks">Chunks</span><span class="pipe-arrow">&rarr;</span>
+    <span class="pipe-step" id="step-index">Index</span><span class="pipe-arrow">&rarr;</span>
+    <span class="pipe-step" id="step-retrieval">Retrieval</span><span class="pipe-arrow">&rarr;</span>
+    <span class="pipe-step" id="step-answer">Answer</span><span class="pipe-arrow">&rarr;</span>
+    <span class="pipe-step" id="step-evaluation">Evaluation</span>
+  </nav>
+</header>
+
+<main class="layout">
+
+  <section class="panel" id="panel-documents">
+    <h2>1. Documents</h2>
+    <p class="panel-desc">The corpus the engine searches. Remove any document, paste your own, or restore the bundled sample set.</p>
+    <ul class="doc-list" id="doc-list"></ul>
+    <div class="custom-doc">
+      <label for="custom-doc-title">New document title</label>
+      <input type="text" id="custom-doc-title" placeholder="e.g. Meeting Notes — Q3 Planning">
+      <label for="custom-doc-text">Paste your own document</label>
+      <textarea id="custom-doc-text" rows="6" placeholder="Paste plain text here. It will be chunked and indexed exactly like the sample documents."></textarea>
+      <p class="form-error" id="doc-form-error" role="alert"></p>
+      <div class="button-row">
+        <button type="button" id="add-doc-btn" class="btn btn-primary">Add document</button>
+        <button type="button" id="reset-docs-btn" class="btn btn-secondary">Load sample set</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-chunking">
+    <h2>2. Chunking &amp; Indexing</h2>
+    <p class="panel-desc">Documents are split on sentence and paragraph boundaries, respecting the size and overlap below. Building the index also computes TF-IDF vectors and vocabulary statistics.</p>
+    <div class="slider-row">
+      <label for="chunk-size">Chunk size: <strong id="chunk-size-val">300</strong> chars</label>
+      <input type="range" id="chunk-size" min="100" max="500" step="10" value="300">
+    </div>
+    <div class="slider-row">
+      <label for="overlap">Overlap: <strong id="overlap-val">40</strong> chars</label>
+      <input type="range" id="overlap" min="0" max="100" step="5" value="40">
+    </div>
+    <div class="button-row">
+      <button type="button" id="build-index-btn" class="btn btn-primary">Build index</button>
+    </div>
+    <div class="stats-row" id="index-stats">
+      <span>No index yet. Click <strong>Build index</strong> to chunk the current documents.</span>
+    </div>
+    <div class="chunk-list" id="chunk-list"></div>
+  </section>
+
+  <section class="panel" id="panel-retrieval">
+    <h2>3. Retrieval</h2>
+    <p class="panel-desc">Your query is vectorised with the same TF-IDF scheme and ranked against every chunk by cosine similarity.</p>
+    <div class="preset-row" aria-label="Sample questions">
+      <button type="button" class="chip preset-chip" data-question="How many days of annual leave do employees get and can leave be carried over?">Leave entitlement &amp; carry-over</button>
+      <button type="button" class="chip preset-chip" data-question="What is the launch date and pricing for the Atlas product?">Atlas launch date &amp; pricing</button>
+      <button type="button" class="chip preset-chip" data-question="How much did cloud infrastructure cost and where can we save money on compute?">Cloud costs &amp; savings</button>
+    </div>
+    <label for="query-input">Query</label>
+    <input type="text" id="query-input" placeholder="Ask a question about the documents above…">
+    <div class="retrieval-controls">
+      <label for="topk-select">Top-k results</label>
+      <select id="topk-select">
+        <option value="3">3</option>
+        <option value="5" selected>5</option>
+        <option value="8">8</option>
+      </select>
+      <button type="button" id="run-retrieval-btn" class="btn btn-primary">Run retrieval</button>
+    </div>
+    <p class="form-error" id="retrieval-error" role="alert"></p>
+    <div class="retrieval-results" id="retrieval-results">
+      <p class="empty-state">No retrieval run yet. Build the index, then run a query.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-answer">
+    <h2>4. Grounded Answer</h2>
+    <p class="panel-desc">The answer is composed extractively — only from sentences in the retrieved chunks — with inline citations. Click a citation to highlight its source chunk.</p>
+    <div class="button-row">
+      <button type="button" id="generate-answer-btn" class="btn btn-primary">Generate grounded answer</button>
+    </div>
+    <p class="form-error" id="answer-error" role="alert"></p>
+    <div class="answer-output" id="answer-output">
+      <p class="empty-state">No answer yet. Run retrieval first, then generate a grounded answer.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-evaluation">
+    <h2>5. Evaluation</h2>
+    <p class="panel-desc">Metrics are computed from the actual last retrieval and answer run — nothing here is pre-filled.</p>
+    <div class="eval-grid" id="eval-tiles">
+      <div class="eval-tile"><span class="eval-value">—</span><span class="eval-label">Run a query to populate</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p>Enterprise RAG Engine — demonstration build. Retrieval: TF-IDF + cosine similarity. Answering: extractive, citation-grounded. Evaluation: computed live from the last run.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

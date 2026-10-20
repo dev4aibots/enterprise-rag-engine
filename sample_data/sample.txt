@@ -1,0 +1,5 @@
+Acme Cloud Platform Overview. Acme Cloud is an enterprise platform for deploying and scaling applications across regions. The platform provides managed Kubernetes, observability, and cost controls for engineering teams.
+
+Pricing and Billing. Acme Cloud bills monthly based on compute hours and storage used. Enterprise customers receive volume discounts of up to twenty percent when they commit to annual contracts. Billing reports are available in the console and can be exported as CSV files for finance teams.
+
+Security and Compliance. Acme Cloud encrypts data in transit with TLS and data at rest with AES-256 encryption. The platform is audited annually and supports role-based access control, single sign-on, and detailed audit logs for compliance teams.
